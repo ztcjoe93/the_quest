@@ -84,8 +84,11 @@ func (database *Database) GetTiles(areaCode string) ([]*area.Tile, int, int) {
 			maxY = dbY + 1
 		}
 
-		tile := area.CreateTile(dbContent, dbAreaCode, dbMonEncounter,
+		tile, err := area.CreateTile(dbContent, dbAreaCode, dbMonEncounter,
 			dbX, dbY)
+		if err != nil {
+			log.Fatalf("Error creating tile: %v", err)
+		}
 		tiles = append(tiles, tile)
 	}
 

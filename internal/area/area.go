@@ -1,8 +1,10 @@
 package area
 
 import (
+	"errors"
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Position struct {
@@ -173,13 +175,19 @@ type Tile struct {
 
 */
 func CreateTile(content string, areaCode string, monsterEncounter bool,
-	x int, y int) *Tile {
+	x int, y int) (*Tile, error) {
+
+	if x < 0 || y < 0 {
+		log.Errorf("(%v,%v) coordinates provided contains negative value\n", x, y)
+		return nil, errors.New("negative XY Coordinates")
+	}
+
 	return &Tile{
 		content:          content,
 		areaCode:         areaCode,
 		monsterEncounter: monsterEncounter,
 		coordinates:      Position{x, y},
-	}
+	}, nil
 }
 
 func (tile *Tile) GetCoordinates() Position {
