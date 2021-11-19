@@ -15,6 +15,7 @@ type Grid struct {
 	areaCode                string
 	matrix                  [][]Tile
 	startingPos, currentPos Position
+	maxPos                  Position
 }
 
 func CreateGrid(tiles []*Tile, maxX int, maxY int, pos Position) Grid {
@@ -36,6 +37,63 @@ func CreateGrid(tiles []*Tile, maxX int, maxY int, pos Position) Grid {
 		matrix:      matrix,
 		startingPos: Position{pos.X, pos.Y},
 		currentPos:  Position{pos.X, pos.Y},
+		maxPos:      Position{maxX, maxY},
+	}
+}
+
+func (grid *Grid) PrintGrid() {
+	picture := make([][]string, (grid.maxPos.Y*2)+2)
+
+	for row := range picture {
+		picture[row] = make([]string, (grid.maxPos.X*3)+1)
+		for cell := range picture[row] {
+			picture[row][cell] = " "
+		}
+	}
+
+	hexagon := make([][]string, 3)
+	for row := range hexagon {
+		hexagon[row] = make([]string, 4)
+	}
+
+	// hexagon shapes in the matrix
+	hexagon[0][0] = " "
+	hexagon[0][1] = "_"
+	hexagon[0][2] = "_"
+	hexagon[0][3] = " "
+	hexagon[1][0] = "/"
+	hexagon[1][1] = " "
+	hexagon[1][2] = " "
+	hexagon[1][3] = "\\"
+	hexagon[2][0] = "\\"
+	hexagon[2][1] = "_"
+	hexagon[2][2] = "_"
+	hexagon[2][3] = "/"
+
+	for ind, row := range grid.matrix {
+		for colInd, col := range row {
+			if col.areaCode != "" {
+				xStart := colInd * 3
+				//xEnd := xStart + 3
+				yStart := ind*2 + (colInd % 2)
+				//yEnd := yStart + 2
+
+				for i := 0; i < 3; i++ {
+					for j := 0; j < 4; j++ {
+						if picture[i+yStart][j+xStart] == " " {
+							picture[i+yStart][j+xStart] = hexagon[i][j]
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for ind, row := range picture {
+		for colInd, _ := range row {
+			fmt.Printf("%v", picture[ind][colInd])
+		}
+		fmt.Printf("\n")
 	}
 }
 
@@ -68,7 +126,6 @@ func (grid *Grid) MoveToTile(tile Tile) {
 		- tiles on even x-axis can access adjacent tiles with same/-1 y-axis
 		- tiles on odd x-axis can access adjacent tiles with same/+1 y-axis
 
-	Why hexagons? Because hexagons are the *_bestagons_*
 */
 func (grid *Grid) GetAccessibleTiles() []Tile {
 	fmt.Println(grid.currentPos)
