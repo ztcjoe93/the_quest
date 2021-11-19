@@ -41,6 +41,15 @@ func CreateGrid(tiles []*Tile, maxX int, maxY int, pos Position) Grid {
 	}
 }
 
+/*
+	Prints a map of all tiles onto the console,
+	currently a debugging/map-show tool but can be used for character
+	position indication if needed later on.
+
+	Algorithm calculates the exact position where the hexagon is to be
+	generated and populates the 2d matrix with the data if a hexagon tile
+	is found within the Grid.matrix
+*/
 func (grid *Grid) PrintGrid() {
 	picture := make([][]string, (grid.maxPos.Y*2)+2)
 
@@ -51,6 +60,7 @@ func (grid *Grid) PrintGrid() {
 		}
 	}
 
+	// base ehxagon
 	hexagon := make([][]string, 3)
 	for row := range hexagon {
 		hexagon[row] = make([]string, 4)
