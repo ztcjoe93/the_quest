@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"the_quest/internal/area"
 	"the_quest/internal/character"
 	"the_quest/internal/database"
 
@@ -23,15 +26,43 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Main application entry point")
-
 	ch := character.CreateCharacter("test")
 	fmt.Println(ch)
 
 	db := database.Init()
-	test01Tiles := db.GetTiles("test01")
+	test01Tiles, maxX, maxY := db.GetTiles("test01")
+	startPosX, startPosY := db.GetStartingPosition("test01")
 
-	for _, tile := range test01Tiles {
-		fmt.Printf("%+v\n", tile)
+	myGrid := area.CreateGrid(test01Tiles, maxX, maxY,
+		area.Position{X: startPosX, Y: startPosY})
+
+	quit := false
+	for !quit {
+
+		paths := myGrid.GetAccessibleTiles()
+		for index, tile := range paths {
+			fmt.Printf("%v %v\n", index+1, tile.GetCoordinates())
+		}
+
+		fmt.Print("\nChoose a path: ")
+		input := bufio.NewScanner(os.Stdin)
+		input.Scan()
+
+		switch input.Text() {
+		case "c":
+			myGrid.GetCurrentPos()
+		case "m":
+			myGrid.PrintGrid()
+		case "q":
+			quit = true
+		default:
+			value, err := strconv.Atoi(input.Text())
+			if err != nil {
+				log.Fatal("Error converting text to int: %v", err)
+			}
+			if value > 0 && value <= len(paths) {
+				myGrid.MoveToTile(paths[value-1])
+			}
+		}
 	}
 }
