@@ -1,8 +1,11 @@
 package area
 
 import (
+	"errors"
 	"reflect"
 	"testing"
+
+	tqerr "the_quest/internal/error"
 )
 
 /*
@@ -37,7 +40,7 @@ func TestCreateTile(t *testing.T) {
 
 func TestCreateTileWithNegativeYPos(t *testing.T) {
 	_, err := CreateTile("test", "areaCode01", false, 5, -1)
-	if err == nil {
+	if !errors.Is(err, tqerr.ErrNegativeValue) {
 		t.Fatalf(`Negative coordinates provided but no error returned.
 		<x_value> = %v, <y_value> = %v`, 5, -1)
 	}
@@ -45,7 +48,7 @@ func TestCreateTileWithNegativeYPos(t *testing.T) {
 
 func TestCreateTileWithNegativeXPos(t *testing.T) {
 	_, err := CreateTile("test", "areaCode01", false, -2, 3)
-	if err == nil {
+	if !errors.Is(err, tqerr.ErrNegativeValue) {
 		t.Fatalf(`Negative coordinates provided but no error returned.
 		<x_value> = %v, <y_value> = %v`, -2, 3)
 	}

@@ -1,8 +1,9 @@
 package area
 
 import (
-	"errors"
 	"fmt"
+
+	err "the_quest/internal/error"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -246,7 +247,7 @@ func CreateTile(content string, areaCode string, monsterEncounter bool,
 
 	if x < 0 || y < 0 {
 		log.Errorf("(%v,%v) coordinates provided contains negative value\n", x, y)
-		return nil, errors.New("negative XY Coordinates")
+		return nil, err.ErrNegativeValue
 	}
 
 	return &Tile{
