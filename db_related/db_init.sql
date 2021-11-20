@@ -1,7 +1,11 @@
 CREATE TABLE `grid` (
-  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `area_code` varchar(12) NOT NULL UNIQUE
-);
+  `id` int NOT NULL AUTO_INCREMENT,
+  `area_code` varchar(12) NOT NULL,
+  `start_pos_x` int NOT NULL,
+  `start_pos_y` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `area_code` (`area_code`)
+)
 
 CREATE TABLE `tile` (
   `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,

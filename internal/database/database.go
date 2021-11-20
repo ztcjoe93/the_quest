@@ -44,7 +44,8 @@ func Init() *Database {
 }
 
 // fetch all tiles by specified areaCode
-func (database *Database) GetTiles(areaCode string) []*area.Tile {
+// returns a slice of Tile and the max values for x, y coordinates
+func (database *Database) GetTiles(areaCode string) ([]*area.Tile, int, int) {
 	db := database.database
 	var tiles []*area.Tile
 
@@ -63,13 +64,31 @@ func (database *Database) GetTiles(areaCode string) []*area.Tile {
 
 	defer rows.Close()
 
+	var (
+		maxX int = 0
+		maxY int = 0
+	)
+
 	for rows.Next() {
 		err := rows.Scan(&dbContent, &dbAreaCode, &dbMonEncounter, &dbX, &dbY)
 		if err != nil {
 			log.Fatal(err)
 		}
-		tile := area.CreateTile(dbContent, dbAreaCode, dbMonEncounter,
+
+		// if value is more than base value, replace value in int and add 1
+		// due to zero-indexing
+		if dbX >= maxX {
+			maxX = dbX + 1
+		}
+		if dbY >= maxY {
+			maxY = dbY + 1
+		}
+
+		tile, err := area.CreateTile(dbContent, dbAreaCode, dbMonEncounter,
 			dbX, dbY)
+		if err != nil {
+			log.Fatalf("Error creating tile: %v", err)
+		}
 		tiles = append(tiles, tile)
 	}
 
@@ -78,5 +97,21 @@ func (database *Database) GetTiles(areaCode string) []*area.Tile {
 		log.Fatal(err)
 	}
 
-	return tiles
+	return tiles, maxX, maxY
+}
+
+func (database *Database) GetStartingPosition(areaCode string) (int, int) {
+	db := database.database
+	var (
+		startX, startY int
+	)
+
+	row := db.QueryRow(`SELECT start_pos_x, start_pos_y FROM grid WHERE
+		area_code = ?`, areaCode)
+	err := row.Scan(&startX, &startY)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return startX, startY
 }
