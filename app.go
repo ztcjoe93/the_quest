@@ -58,7 +58,7 @@ func main() {
 		default:
 			value, err := strconv.Atoi(input.Text())
 			if err != nil {
-				log.Fatal("Error converting text to int: %v", err)
+				log.Fatalf("Error converting text to int: %v", err)
 			}
 			if value > 0 && value <= len(paths) {
 				myGrid.MoveToTile(paths[value-1])
